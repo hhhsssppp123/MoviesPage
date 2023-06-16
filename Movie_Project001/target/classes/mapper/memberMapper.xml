@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  
+  <mapper namespace="com.Movie_Project.dao.MemberDao">
+ 		<select id="selectReserveList" resultType="map">
+			SELECT RE.RECODE, MV.MVCODE, MV.MVTITLE, MV.MVPOS,TH.THNAME, 
+			       TO_CHAR(RE.REDATE,'YYYY-MM-DD HH24:MI') AS REDATE, RE.REROOM, 
+			       RE.RECOUNT,RV.RVRECODE 
+			FROM RESERVATION RE 
+			INNER JOIN MOVIES MV ON RE.REMVCODE = MV.MVCODE
+			INNER JOIN THEATERS TH ON RE.RETHCODE = TH.THCODE
+			LEFT OUTER JOIN REVIEWS RV ON RE.RECODE = RV.RVRECODE
+			WHERE RE.REMID = #{remid}
+			ORDER BY REDATE DESC
+	  	</select>
+  
+  		<select id="selectMemberList" resultType="map">
+			SELECT * 
+			FROM MEMBERS M
+			LEFT OUTER JOIN(SELECT REMID, COUNT(*) AS RECOUNT FROM RESERVATION GROUP BY REMID)RE
+			ON M.MID = RE.REMID
+			LEFT OUTER JOIN (SELECT RVMID, COUNT(*) AS RVCOUNT FROM REVIEWS RV GROUP BY RVMID) RV
+			ON M.MID = RV.RVMID
+			WHERE MSTATE != 2
+	  	</select>
+  
+  
+		<update id="changeMstate">
+	  		UPDATE MEMBERS
+	  		SET 
+	  		<choose>
+	  			<when test="mstate == 1">
+	  				MSTATE = '0'
+	  			</when>
+	  			<when test="mstate == 0">
+	  				MSTATE = '1'
+	  			</when>
+	  			<otherwise>
+	  				MSTATE = '0'
+	  			</otherwise>
+	  		</choose>
+	  		WHERE MID = #{mid}
+	  	</update>
+  
+  
+  		<select id="selectDetailMemberInfo" resultType="map">
+	  		SELECT * 
+			FROM MEMBERS M
+			LEFT OUTER JOIN (SELECT REMID, COUNT(*) AS RECOUNT FROM RESERVATION GROUP BY REMID ) RE
+			ON M.MID = RE.REMID
+			LEFT OUTER JOIN (SELECT RVMID, COUNT(*) AS RVCOUNT FROM REVIEWS GROUP BY RVMID ) RV
+			ON M.MID = RV.RVMID
+			WHERE MID = #{mid}
+	  	</select>
+	  	
+	  	
+	  	
+  </mapper>
+  
+  
+  
+  

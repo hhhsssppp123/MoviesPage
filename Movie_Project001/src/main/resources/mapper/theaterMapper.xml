@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  
+  <mapper namespace="com.Movie_Project.dao.TheaterDao">
+ 
+
+ <select id="selectreTheaterList" resultType="map">
+	SELECT MV.MVTITLE, MV.MVINFO, MV.MVDATE, TH.THNAME, SC.SCROOM, TO_DATE(SC.SCDATE,'YYYY-MM-DD HH24:MI') AS SCDATE
+	FROM MOVIES MV, SCHEDULES SC, THEATERS TH 
+	WHERE MVCODE IN ( SELECT SCMVCODE FROM SCHEDULES WHERE SCTHCODE = #{tcode})
+ 	AND TO_CHAR(SCDATE,'YYYY-MM-DD') = #{scdate}		
+</select>
+
+
+ <select id="selectreMovieList" resultType="map">
+	SELECT DISTINCT MV.*
+	FROM MOVIES MV, SCHEDULES SC
+	WHERE MV.MVCODE = SC.SCMVCODE 
+	AND SC.SCTHCODE = #{tcode} AND TO_CHAR(SC.SCDATE,'YYYY-MM-DD' )= #{scdate}
+	ORDER BY MV.MVCODE
+</select>
+ 
+<select id="selectreMovieList2" resultType="map">
+	SELECT DISTINCT MV.*
+	FROM MOVIES MV, SCHEDULES SC
+	WHERE MV.MVCODE = SC.SCMVCODE 
+	AND SC.SCTHCODE = #{tcode}
+	ORDER BY MV.MVCODE
+</select>
+
+ 	
+  </mapper>
